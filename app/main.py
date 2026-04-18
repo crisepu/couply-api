@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.firebase import init_firebase
 from app.routers import auth, couple
+from app.core.config import settings
 
 
 @asynccontextmanager
@@ -23,6 +24,10 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(couple.router)
+
+if settings.ENVIRONMENT == "dev":
+    from app.routers import dev
+    app.include_router(dev.router)
 
 
 @app.get("/health")

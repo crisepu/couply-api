@@ -18,9 +18,10 @@ async def register(
     db: AsyncSession = Depends(get_db),
 ):
     decoded = verify_firebase_token(credentials.credentials)
+    uid = decoded["uid"]
     data = UserCreate(
-        firebase_uid=decoded["uid"],
-        email=decoded.get("email", ""),
+        firebase_uid=uid,
+        email=decoded.get("email") or f"{uid}@couply.dev",
         name=decoded.get("name"),
     )
     user = await auth_service.create_user(db, data)

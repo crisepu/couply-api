@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Couply — Get Firebase Token</title>
+  <style>
+    body { font-family: monospace; padding: 2rem; background: #1e1e1e; color: #d4d4d4; }
+    h2 { color: #569cd6; }
+    button { background: #0e639c; color: white; border: none; padding: 0.6rem 1.2rem; cursor: pointer; border-radius: 4px; font-size: 1rem; margin: 0.3rem; }
+    button:hover { background: #1177bb; }
+    textarea { width: 100%; height: 120px; background: #2d2d2d; color: #9cdcfe; border: 1px solid #444; padding: 0.5rem; font-size: 0.85rem; margin-top: 0.5rem; border-radius: 4px; }
+    .label { color: #4ec9b0; margin-top: 1rem; display: block; }
+    .uid { color: #ce9178; font-size: 0.9rem; margin-top: 0.3rem; }
+    .copied { color: #4ec9b0; margin-left: 0.5rem; display: none; }
+  </style>
+</head>
+<body>
+  <h2>Couply — Firebase ID Token Generator</h2>
+
+  <button onclick="getToken('user1')">Token Usuario 1</button>
+  <button onclick="getToken('user2')">Token Usuario 2</button>
+  <button onclick="copyToken()">Copiar token <span class="copied" id="copied">✓ copiado</span></button>
+
+  <span class="label">UID:</span>
+  <div class="uid" id="uid">—</div>
+
+  <span class="label">ID Token (válido 1 hora):</span>
+  <textarea id="token" readonly placeholder="Presiona un botón para generar..."></textarea>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyAFQZOwBWAotxL_bF_RFFfDXon2yGBpKn4",
+      projectId: "couply-afbf5",
+    });
+    const auth = getAuth(app);
+
+    const UIDS = {
+      user1: "dev-user-1",
+      user2: "dev-user-2",
+    };
+
+    window.getToken = async (userKey) => {
+      const uid = UIDS[userKey];
+      document.getElementById("uid").textContent = "Solicitando token para: " + uid + "...";
+      document.getElementById("token").value = "";
+
+      try {
+        // Pide el custom token al backend local
+        const resp = await fetch(`http://localhost:8000/dev/custom-token?uid=${uid}`);
+        if (!resp.ok) throw new Error("Backend no disponible o endpoint no existe");
+        const { custom_token } = await resp.json();
+
+        const cred = await signInWithCustomToken(auth, custom_token);
+        const idToken = await cred.user.getIdToken(true);
+
+        document.getElementById("uid").textContent = uid;
+        document.getElementById("token").value = idToken;
+      } catch (err) {
+        document.getElementById("uid").textContent = "Error: " + err.message;
+      }
+    };
+
+    window.copyToken = () => {
+      const token = document.getElementById("token").value;
+      if (!token) return;
+      navigator.clipboard.writeText(token);
+      const el = document.getElementById("copied");
+      el.style.display = "inline";
+      setTimeout(() => el.style.display = "none", 2000);
+    };
+  </script>
+</body>
+</html>
