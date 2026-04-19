@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from pydantic import BaseModel, EmailStr
 
 
@@ -6,6 +7,11 @@ class UserCreate(BaseModel):
     firebase_uid: str
     email: EmailStr
     name: str | None = None
+
+
+class UserUpdate(BaseModel):
+    name: str | None = None
+    salary: Decimal | None = None
 
 
 class UserResponse(BaseModel):

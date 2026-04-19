@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.session import get_db
 from app.core.dependencies import get_current_user
 from app.core.firebase import verify_firebase_token
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from app.services import auth_service
 from app.models.user import User
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -31,3 +31,12 @@ async def register(
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    data: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await auth_service.update_user(db, current_user, data)
