@@ -112,7 +112,6 @@ class TestCalculateBalance:
         assert result["balance"] == Decimal("0.00")
         assert result["debtor"] is None
         assert result["creditor"] is None
-        assert "settled" in result["summary"]
 
     async def test_u2_owes_u1_when_u1_paid(self, user1, user1_id, user2_id, complete_couple, couple_id):
         # u1 paid 10000, split equal → u2 owes 5000
@@ -163,4 +162,3 @@ class TestCalculateBalance:
         result = await balance_service.calculate_balance(db, user1)
         assert result["balance"] == Decimal("0.00")
         assert result["debtor"] is None
-        assert "settled" in result["summary"]

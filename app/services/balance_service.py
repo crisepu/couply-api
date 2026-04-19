@@ -91,13 +91,10 @@ async def calculate_balance(db: AsyncSession, current_user: User) -> dict:
 
     if net_u1 > Decimal("0.01"):
         debtor, creditor = couple.user2_id, couple.user1_id
-        summary = f"User {couple.user2_id} owes ${balance:,.0f} to user {couple.user1_id}"
     elif net_u1 < Decimal("-0.01"):
         debtor, creditor = couple.user1_id, couple.user2_id
-        summary = f"User {couple.user1_id} owes ${balance:,.0f} to user {couple.user2_id}"
     else:
         debtor, creditor = None, None
-        summary = "All settled up"
 
     return {
         "user1_id": couple.user1_id,
@@ -105,5 +102,4 @@ async def calculate_balance(db: AsyncSession, current_user: User) -> dict:
         "balance": balance,
         "debtor": debtor,
         "creditor": creditor,
-        "summary": summary,
     }
