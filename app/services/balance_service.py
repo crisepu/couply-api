@@ -22,7 +22,7 @@ async def _resolve_split_percentages(
             )
         return Decimal(str(couple.percentage_user1)), Decimal(str(couple.percentage_user2))
 
-    # auto: calculate from sueldos in real time
+    # auto: calculate from salaries in real time
     result = await db.execute(
         select(User).where(User.id.in_([couple.user1_id, couple.user2_id]))
     )
@@ -30,13 +30,13 @@ async def _resolve_split_percentages(
     u1 = users.get(couple.user1_id)
     u2 = users.get(couple.user2_id)
 
-    if not u1 or not u2 or u1.sueldo is None or u2.sueldo is None:
+    if not u1 or not u2 or u1.salary is None or u2.salary is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Both users must have their sueldo set to use auto split mode",
+            detail="Both users must have their salary set to use auto split mode",
         )
-    total = Decimal(str(u1.sueldo)) + Decimal(str(u2.sueldo))
-    pct_u1 = (Decimal(str(u1.sueldo)) / total * 100).quantize(Decimal("0.01"))
+    total = Decimal(str(u1.salary)) + Decimal(str(u2.salary))
+    pct_u1 = (Decimal(str(u1.salary)) / total * 100).quantize(Decimal("0.01"))
     pct_u2 = (Decimal("100") - pct_u1).quantize(Decimal("0.01"))
     return pct_u1, pct_u2
 
@@ -91,13 +91,13 @@ async def calculate_balance(db: AsyncSession, current_user: User) -> dict:
 
     if net_u1 > Decimal("0.01"):
         debtor, creditor = couple.user2_id, couple.user1_id
-        summary = f"El usuario {couple.user2_id} le debe ${balance:,.0f} al usuario {couple.user1_id}"
+        summary = f"User {couple.user2_id} owes ${balance:,.0f} to user {couple.user1_id}"
     elif net_u1 < Decimal("-0.01"):
         debtor, creditor = couple.user1_id, couple.user2_id
-        summary = f"El usuario {couple.user1_id} le debe ${balance:,.0f} al usuario {couple.user2_id}"
+        summary = f"User {couple.user1_id} owes ${balance:,.0f} to user {couple.user2_id}"
     else:
         debtor, creditor = None, None
-        summary = "Están al día"
+        summary = "All settled up"
 
     return {
         "user1_id": couple.user1_id,

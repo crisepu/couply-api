@@ -80,13 +80,13 @@ async def update_split(db: AsyncSession, current_user: User, data: UpdateSplitRe
         users = {u.id: u for u in result.scalars().all()}
         u1 = users.get(couple.user1_id)
         u2 = users.get(couple.user2_id)
-        if not u1 or not u2 or u1.sueldo is None or u2.sueldo is None:
+        if not u1 or not u2 or u1.salary is None or u2.salary is None:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Both users must have their sueldo set to use auto split mode",
+                detail="Both users must have their salary set to use auto split mode",
             )
-        total = Decimal(str(u1.sueldo)) + Decimal(str(u2.sueldo))
-        couple.percentage_user1 = (Decimal(str(u1.sueldo)) / total * 100).quantize(Decimal("0.01"))
+        total = Decimal(str(u1.salary)) + Decimal(str(u2.salary))
+        couple.percentage_user1 = (Decimal(str(u1.salary)) / total * 100).quantize(Decimal("0.01"))
         couple.percentage_user2 = (Decimal("100") - couple.percentage_user1).quantize(Decimal("0.01"))
     elif data.split_mode == SplitMode.equal:
         couple.percentage_user1 = Decimal("50.00")

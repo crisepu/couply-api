@@ -46,7 +46,7 @@ def user1(user1_id, couple_id):
     u.email = "user1@couply.dev"
     u.name = "User One"
     u.couple_id = couple_id
-    u.sueldo = None
+    u.salary = None
     return u
 
 @pytest.fixture
@@ -57,7 +57,7 @@ def user2(user2_id, couple_id):
     u.email = "user2@couply.dev"
     u.name = "User Two"
     u.couple_id = couple_id
-    u.sueldo = None
+    u.salary = None
     return u
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def user1_no_couple(user1_id):
     u.firebase_uid = "firebase-uid-1"
     u.email = "user1@couply.dev"
     u.couple_id = None
-    u.sueldo = None
+    u.salary = None
     return u
 
 @pytest.fixture
@@ -102,7 +102,7 @@ def shared_expense(couple_id, user1_id, user2_id):
     e.created_by = user1_id
     e.type = ExpenseType.shared
     e.amount = Decimal("10000")
-    e.category = "comida"
+    e.category = "food"
     e.description = None
     e.expense_date = date(2026, 4, 18)
     e.paid_by = user2_id

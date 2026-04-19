@@ -107,7 +107,7 @@ class TestUpdateSplit:
         assert complete_couple.percentage_user2 == Decimal("30")
         assert complete_couple.split_mode == SplitMode.custom
 
-    async def test_auto_mode_raises_422_if_sueldo_missing(self, user1, complete_couple, user2):
+    async def test_auto_mode_raises_422_if_salary_missing(self, user1, complete_couple, user2):
         # Both users have no sueldo
         mock_result_couple = AsyncMock()
         mock_result_couple.scalar_one_or_none = lambda: complete_couple
@@ -125,9 +125,9 @@ class TestUpdateSplit:
             await couple_service.update_split(db, user1, data)
         assert exc.value.status_code == 422
 
-    async def test_auto_mode_calculates_from_sueldo(self, user1, user2, complete_couple):
-        user1.sueldo = 1000000
-        user2.sueldo = 500000
+    async def test_auto_mode_calculates_from_salary(self, user1, user2, complete_couple):
+        user1.salary = 1000000
+        user2.salary = 500000
 
         mock_result_couple = AsyncMock()
         mock_result_couple.scalar_one_or_none = lambda: complete_couple
