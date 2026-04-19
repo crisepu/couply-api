@@ -17,7 +17,6 @@ class BalanceResponse(BaseModel):
     balance: Decimal
     debtor: uuid.UUID | None
     creditor: uuid.UUID | None
-    summary: str
 
 
 @router.get("", response_model=BalanceResponse)

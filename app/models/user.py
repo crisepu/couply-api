@@ -13,6 +13,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str | None] = mapped_column(String, nullable=True)
     couple_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("couples.id"), nullable=True)
-    sueldo: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    salary: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
 
     couple: Mapped["Couple | None"] = relationship("Couple", foreign_keys=[couple_id], back_populates="members")
