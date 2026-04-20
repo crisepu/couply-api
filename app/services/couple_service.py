@@ -74,20 +74,10 @@ async def update_split(db: AsyncSession, current_user: User, data: UpdateSplitRe
     couple = await get_couple_for_user(db, current_user)
 
     if data.split_mode == SplitMode.auto:
-        result = await db.execute(
-            select(User).where(User.id.in_([couple.user1_id, couple.user2_id]))
-        )
-        users = {u.id: u for u in result.scalars().all()}
-        u1 = users.get(couple.user1_id)
-        u2 = users.get(couple.user2_id)
-        if not u1 or not u2 or u1.salary is None or u2.salary is None:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Both users must have their salary set to use auto split mode",
-            )
-        total = Decimal(str(u1.salary)) + Decimal(str(u2.salary))
-        couple.percentage_user1 = (Decimal(str(u1.salary)) / total * 100).quantize(Decimal("0.01"))
-        couple.percentage_user2 = (Decimal("100") - couple.percentage_user1).quantize(Decimal("0.01"))
+        # Percentages are computed at balance calculation time from both users' salaries.
+        # Salary validation is deferred to balance_service — user2 may not have joined yet.
+        couple.percentage_user1 = None
+        couple.percentage_user2 = None
     elif data.split_mode == SplitMode.equal:
         couple.percentage_user1 = Decimal("50.00")
         couple.percentage_user2 = Decimal("50.00")
