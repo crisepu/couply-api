@@ -29,3 +29,9 @@ class PublicUserResponse(BaseModel):
     name: str | None
 
     model_config = {"from_attributes": True}
+
+
+class SalaryResponse(BaseModel):
+    salary: Decimal | None
+
+    model_config = {"from_attributes": True}
