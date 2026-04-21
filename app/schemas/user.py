@@ -21,3 +21,11 @@ class UserResponse(BaseModel):
     couple_id: uuid.UUID | None
 
     model_config = {"from_attributes": True}
+
+
+class PublicUserResponse(BaseModel):
+    id: uuid.UUID
+    email: str
+    name: str | None
+
+    model_config = {"from_attributes": True}
