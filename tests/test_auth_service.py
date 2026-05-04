@@ -75,3 +75,24 @@ class TestUpdateUser:
         from app.schemas.user import UserResponse
         response = UserResponse.model_validate(result)
         assert not hasattr(response, "salary")
+
+
+class TestSalaryResponse:
+    async def test_salary_response_exposes_salary(self, user1):
+        from app.schemas.user import SalaryResponse
+        user1.salary = Decimal("2500000")
+        response = SalaryResponse.model_validate(user1)
+        assert response.salary == Decimal("2500000")
+
+    async def test_salary_response_null_when_not_set(self, user1):
+        from app.schemas.user import SalaryResponse
+        user1.salary = None
+        response = SalaryResponse.model_validate(user1)
+        assert response.salary is None
+
+    async def test_salary_response_does_not_expose_name_or_email(self, user1):
+        from app.schemas.user import SalaryResponse
+        response = SalaryResponse.model_validate(user1)
+        assert not hasattr(response, "name")
+        assert not hasattr(response, "email")
+        assert not hasattr(response, "couple_id")

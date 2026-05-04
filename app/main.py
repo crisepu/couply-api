@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.firebase import init_firebase
-from app.routers import auth, couple, expenses, balance
+from app.routers import auth, couple, expenses, balance, users
 from app.core.config import settings
 
 
@@ -26,6 +26,7 @@ app.include_router(auth.router)
 app.include_router(couple.router)
 app.include_router(expenses.router)
 app.include_router(balance.router)
+app.include_router(users.router)
 
 if settings.ENVIRONMENT == "dev":
     from app.routers import dev
